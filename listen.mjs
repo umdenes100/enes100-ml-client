@@ -33,6 +33,9 @@ async function downloadFile(filename) {
     const downloadURL = await getDownloadURL(ref(storage, filename));
     const destination = outputdir + filename;
     const res = await fetch(downloadURL);
+    if (fs.existsSync(destination)) {
+        fs.unlinkSync(destination);
+    }
     const fileStream = fs.createWriteStream(destination, { flags: 'wx' });
     await finished(Readable.from(res.body).pipe(fileStream));
 }
@@ -56,12 +59,14 @@ async function check() {
             if (localtime < new Date(metadata.updated).getTime()) {
                 console.log('Downloading ' + metadata.name, 'because local time is ' + localtime + ' and remote time is ' + new Date(metadata.updated).getTime())
                 await downloadFile(metadata.name);
+                console.log('Downloaded ' + metadata.name)
             } else {
                 console.log('Skipping ' + metadata.name, 'because local time is ' + localtime + ' and remote time is ' + new Date(metadata.updated).getTime())
             }
         } else {
             console.log('Downloading ' + metadata.name, 'because it does not exist locally');
             await downloadFile(metadata.name);
+            console.log('Downloaded ' + metadata.name)
         }
     }
 }
