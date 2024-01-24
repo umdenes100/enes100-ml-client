@@ -79,7 +79,10 @@
         {#if modelFile?.length === 1}
             <small>Your file will be saved as <code>{outputpath}</code>.</small>
             {#if replacement}
-                <p>This will replace your teams previously uploaded model.</p>
+                <p style="color: red">This will replace your teams previously uploaded model.
+                    <small>If this is your first time uploading a model, please change your team name (maybe add your
+                        section name to the end?) Make sure you update your Enes100.begin call with your updated team
+                        name!</small></p>
             {/if}
         {/if}
     {:else if $progress.state === 'uploading'}
