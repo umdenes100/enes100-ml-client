@@ -4,6 +4,7 @@ import * as database from "firebase/database";
 import { Readable } from 'stream';
 import { finished } from 'stream/promises';
 import fs from 'fs';
+import fetch from 'node-fetch'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -33,10 +34,14 @@ async function downloadFile(filename) {
     const destination = outputdir + filename;
     const res = await fetch(downloadURL);
     const fileStream = fs.createWriteStream(destination, { flags: 'wx' });
-    await finished(Readable.fromWeb(res.body).pipe(fileStream));
+    await finished(Readable.from(res.body).pipe(fileStream));
 }
 
 async function check() {
+    // make models directory if it doesn't exist
+    if (!fs.existsSync(outputdir)) {
+        fs.mkdirSync(outputdir);
+    }
     console.log('Executing check');
     // Check the files in the storage and update the database accordingly
     const res = await listAll(rootref);
